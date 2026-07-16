@@ -2,8 +2,29 @@ const PTCADApi={
   async request(action,payload={}){
     const cfg=window.PTCAD_CONFIG||{};
     if(!cfg.apiUrl||cfg.demoMode){return this.demo(action,payload)}
-    const res=await fetch(cfg.apiUrl,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,...payload,token:sessionStorage.getItem("ptcad_admin_token")||payload.token||""})});
-    const data=await res.json();if(!data.success)throw new Error(data.message||"เกิดข้อผิดพลาด");return data;
+    let res;
+    try{
+      res=await fetch(cfg.apiUrl,{
+        method:"POST",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify({
+          action,
+          ...payload,
+          token:sessionStorage.getItem("ptcad_admin_token")||payload.token||""
+        })
+      });
+    }catch(error){
+      throw new Error("เชื่อมต่อระบบไม่สำเร็จ กรุณาลองใหม่");
+    }
+    const raw=await res.text();
+    let data;
+    try{
+      data=JSON.parse(raw);
+    }catch(error){
+      throw new Error("API ตอบกลับไม่ถูกต้อง กรุณาตรวจสอบ Web App deployment");
+    }
+    if(!data.success)throw new Error(data.message||"เกิดข้อผิดพลาด");
+    return data;
   },
   demo(action,payload){
     const store={
@@ -26,7 +47,7 @@ const PTCADApi={
       case"deleteCampaign":save("ptcad_campaigns",store.campaigns().filter(x=>x.campaign_id!==payload.id));return Promise.resolve({success:true});
       case"saveSalesperson":{let a=store.salespeople();const i=a.findIndex(x=>x.sales_id===payload.item.sales_id);if(i>=0)a[i]=payload.item;else a.push(payload.item);save("ptcad_salespeople",a);return Promise.resolve({success:true})}
       case"saveChannel":{let a=store.channels();const i=a.findIndex(x=>x.channel_id===payload.item.channel_id);if(i>=0)a[i]=payload.item;else a.push(payload.item);save("ptcad_channels",a);return Promise.resolve({success:true})}
-      case"adminLogin":return Promise.resolve({success:payload.password===(window.PTCAD_CONFIG.adminDemoPassword||"ptcad2026"),token:"demo-token"});
+      case"adminLogin":return Promise.resolve({success:payload.password==="ptcad2026",token:"demo-token"});
       case"validateSession":return Promise.resolve({success:sessionStorage.getItem("ptcad_admin_token")==="demo-token"});
       default:return Promise.resolve({success:true,data:[]});
     }

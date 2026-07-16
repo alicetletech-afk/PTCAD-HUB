@@ -1,41 +1,51 @@
-# PTCAD Sales Hub
+# PTCAD Sales Hub — Final
 
-ระบบสร้างลิงก์ UTM สำหรับทีมขาย พร้อม Campaign Cards, Caption, QR Code, Link History และหน้า CMS
+ระบบพร้อมใช้งานจริงสำหรับทีมขายและผู้ดูแล CMS
 
-## ไฟล์หลัก
+## หน้าใช้งาน
 
-- `index.html` หน้าสำหรับทีมขาย
-- `login.html` หน้าเข้าสู่ CMS
-- `admin.html` หน้า CMS
-- `js/config.js` ตั้งค่า API และ Demo Mode
-- `apps-script/Code.gs` Backend สำหรับ Google Apps Script
-- `setup/installation-guide.md` คู่มือติดตั้ง
+- `index.html` — Sales Hub สำหรับสร้างลิงก์
+- `login.html` — เข้าสู่ CMS
+- `admin.html` — จัดการ Campaign, Salespeople, Channels และ Link History
 
-## ติดตั้งฐานข้อมูลแบบอัตโนมัติ
+## รูปแบบลิงก์
 
-นำ `apps-script/Code.gs` ไปวางใน Google Apps Script แล้วรัน:
-
-```text
-setupPTCADSalesHub
-```
-
-ระบบจะสร้าง Google Spreadsheet, ทุกแท็บ, หัวคอลัมน์ และข้อมูลตัวอย่างให้อัตโนมัติ ไม่ต้องสร้าง Sheet เอง
-
-## Demo Login
-
-Password: `ptcad2026`
-
-## หมายเหตุ
-
-หน้าเว็บอ้างอิงโลโก้จาก URL ที่ให้มาโดยตรง หากใช้งาน Internal แบบ Offline ให้ดาวน์โหลดโลโก้มาไว้ใน `assets/images/` แล้วแก้ค่า `logoUrl` ใน `js/config.js`
-
-
-## รูปแบบลิงก์เวอร์ชันนี้
-
-ระบบสร้าง `ref` เป็นพารามิเตอร์แรกเสมอ:
+ระบบสร้าง `ref` เป็นพารามิเตอร์แรกเสมอ เช่น:
 
 ```text
 https://ptcadthailand.com/pricing/?ref=ball&utm_source=line&utm_medium=sales&utm_campaign=ptcad_lite_2026
 ```
 
-ชื่อเซลล์เก็บใน `ref` ส่วน `utm_content` ใช้เฉพาะ Content Variant ที่กรอกเพิ่มเติมเท่านั้น
+## API
+
+ไฟล์ `js/config.js` เชื่อมกับ Google Apps Script Web App แล้ว:
+
+```text
+https://script.google.com/macros/s/AKfycbwEh8xJd-XIDwHOCRRunC1CPYxYvBbrUrvxrUH5nLJlOVCCsEn2RXA3_vVIeSRUmCKn/exec
+```
+
+และตั้งค่า `demoMode: false` เรียบร้อย
+
+## Google Apps Script
+
+โค้ดอยู่ที่:
+
+```text
+apps-script/Code.gs
+```
+
+ฟังก์ชันสำคัญ:
+
+- `setupPTCADSalesHub()` สร้าง Google Sheet และข้อมูลตั้งต้น
+- `setAdminPassword("รหัสใหม่")` เปลี่ยนรหัส CMS
+- `getDatabaseInfo()` ดูลิงก์ Google Sheet
+
+## หมายเหตุด้านความปลอดภัย
+
+ควรเปลี่ยนรหัส CMS จากค่าเริ่มต้นทันทีด้วย:
+
+```javascript
+setAdminPassword("รหัสใหม่ที่ต้องการ")
+```
+
+หลังแก้ `Code.gs` ให้สร้าง deployment version ใหม่ทุกครั้ง

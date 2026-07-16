@@ -1,1 +1,71 @@
-<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PTCAD CMS Login</title><link rel="stylesheet" href="css/style.css"></head><body class="login-page"><div class="login-card"><div class="brand"><img class="ptcad-logo" alt="PTCAD"></div><h1>PTCAD Hub CMS</h1><p>เข้าสู่ระบบสำหรับผู้ดูแล</p><div class="notice">Demo password: <strong>ptcad2026</strong></div><div class="field"><label>รหัสผ่าน</label><input id="password" type="password" placeholder="กรอกรหัสผ่าน"></div><button id="loginBtn" class="btn btn-primary" style="width:100%;margin-top:14px">เข้าสู่ระบบ</button><div class="form-actions" style="justify-content:center"><a href="index.html" class="btn btn-ghost">กลับหน้าหลัก</a></div></div><div id="toast" class="toast"></div><script src="js/config.js"></script><script src="js/api.js"></script><script>document.querySelectorAll('.ptcad-logo').forEach(i=>i.src=PTCAD_CONFIG.logoUrl);function toast(m){const t=document.querySelector('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}document.querySelector('#loginBtn').onclick=async()=>{const r=await PTCADApi.request('adminLogin',{password:document.querySelector('#password').value});if(r.success){sessionStorage.setItem('ptcad_admin_token',r.token);location.href='admin.html'}else toast('รหัสผ่านไม่ถูกต้อง')};</script></body></html>
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PTCAD CMS Login</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-page">
+  <div class="login-card">
+    <div class="brand"><img class="ptcad-logo" alt="PTCAD"></div>
+    <h1>PTCAD Hub CMS</h1>
+    <p>เข้าสู่ระบบสำหรับผู้ดูแล</p>
+
+    <div class="field">
+      <label for="password">รหัสผ่าน</label>
+      <input id="password" type="password" placeholder="กรอกรหัสผ่าน" autocomplete="current-password">
+    </div>
+
+    <button id="loginBtn" class="btn btn-primary" style="width:100%;margin-top:14px">เข้าสู่ระบบ</button>
+
+    <div class="form-actions" style="justify-content:center">
+      <a href="index.html" class="btn btn-ghost">กลับหน้าหลัก</a>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    document.querySelectorAll(".ptcad-logo").forEach(img => img.src = PTCAD_CONFIG.logoUrl);
+
+    function toast(message) {
+      const el = document.querySelector("#toast");
+      el.textContent = message;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2500);
+    }
+
+    async function login() {
+      const button = document.querySelector("#loginBtn");
+      const password = document.querySelector("#password").value.trim();
+
+      if (!password) {
+        toast("กรุณากรอกรหัสผ่าน");
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "กำลังเข้าสู่ระบบ...";
+
+      try {
+        const response = await PTCADApi.request("adminLogin", { password });
+        sessionStorage.setItem("ptcad_admin_token", response.token);
+        location.href = "admin.html";
+      } catch (error) {
+        toast(error.message || "เข้าสู่ระบบไม่สำเร็จ");
+      } finally {
+        button.disabled = false;
+        button.textContent = "เข้าสู่ระบบ";
+      }
+    }
+
+    document.querySelector("#loginBtn").addEventListener("click", login);
+    document.querySelector("#password").addEventListener("keydown", event => {
+      if (event.key === "Enter") login();
+    });
+  </script>
+</body>
+</html>

@@ -3,4 +3,60 @@
 <section id="campaignView" class="admin-view"><div class="toolbar"><h2>Campaigns</h2><button id="addCampaign" class="btn btn-primary">+ เพิ่มแคมเปญ</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>สินค้า</th><th>UTM Campaign</th><th>ช่วงเวลา</th><th>สถานะ</th><th></th></tr></thead><tbody id="campaignTable"></tbody></table></div></section>
 <section id="salesView" class="admin-view"><div class="toolbar"><h2>Salespeople</h2><button id="addSales" class="btn btn-primary">+ เพิ่มรายชื่อ</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>Ref Code</th><th>ทีม</th><th>สถานะ</th><th></th></tr></thead><tbody id="salesTable"></tbody></table></div></section>
 <section id="channelView" class="admin-view"><div class="toolbar"><h2>Channels</h2><button id="addChannel" class="btn btn-primary">+ เพิ่มช่องทาง</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>utm_source</th><th>utm_medium</th><th>สถานะ</th><th></th></tr></thead><tbody id="channelTable"></tbody></table></div></section>
-<section id="historyView" class="admin-view"><div class="toolbar"><h2>Link History</h2><button id="exportCSV" class="btn btn-primary">Export CSV</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>เวลา</th><th>แคมเปญ</th><th>ผู้สร้าง</th><th>ช่องทาง</th><th>URL</th></tr></thead><tbody id="adminHistoryTable"></tbody></table></div></section></main></div><div id="toast" class="toast"></div><script src="js/config.js"></script><script src="js/api.js"></script><script src="js/admin.js"></script></body></html>
+<section id="historyView" class="admin-view"><div class="toolbar"><h2>Link History</h2><button id="exportCSV" class="btn btn-primary">Export CSV</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>เวลา</th><th>แคมเปญ</th><th>ผู้สร้าง</th><th>ช่องทาง</th><th>URL</th></tr></thead><tbody id="adminHistoryTable"></tbody></table></div></section></main></div>
+<div id="salesModal" class="cms-modal" aria-hidden="true">
+  <div class="cms-modal-backdrop" data-close-sales-modal></div>
+  <section class="cms-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="salesModalTitle">
+    <div class="cms-modal-header">
+      <div>
+        <span class="cms-modal-eyebrow">Salesperson</span>
+        <h2 id="salesModalTitle">เพิ่มรายชื่อเซลล์</h2>
+        <p>กำหนดชื่อที่แสดงและ Ref Code สำหรับสร้างลิงก์ติดตามผล</p>
+      </div>
+      <button type="button" class="cms-modal-close" data-close-sales-modal aria-label="ปิด">×</button>
+    </div>
+
+    <form id="salesForm" class="cms-modal-form">
+      <input type="hidden" id="salesId">
+
+      <div class="field">
+        <label for="salesDisplayName">ชื่อที่แสดง <span class="required">*</span></label>
+        <input id="salesDisplayName" type="text" placeholder="เช่น Ball" autocomplete="off" required>
+      </div>
+
+      <div class="field">
+        <label for="salesRefCode">Ref Code <span class="required">*</span></label>
+        <input id="salesRefCode" type="text" placeholder="เช่น ball" autocomplete="off" required>
+        <small>ใช้ในลิงก์ เช่น <strong>?ref=ball</strong> ควรใช้ตัวอักษรอังกฤษพิมพ์เล็ก ไม่มีเว้นวรรค</small>
+      </div>
+
+      <div class="field">
+        <label for="salesTeam">ทีม</label>
+        <input id="salesTeam" type="text" placeholder="เช่น Sales">
+      </div>
+
+      <div class="field">
+        <label for="salesEmail">อีเมล</label>
+        <input id="salesEmail" type="email" placeholder="name@company.com">
+      </div>
+
+      <label class="cms-switch-row">
+        <span>
+          <strong>เปิดใช้งาน</strong>
+          <small>แสดงรายชื่อนี้ในหน้า Sales Hub</small>
+        </span>
+        <input id="salesIsActive" type="checkbox" checked>
+        <span class="cms-switch"></span>
+      </label>
+
+      <div id="salesFormError" class="cms-form-error hidden"></div>
+
+      <div class="cms-modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-sales-modal>ยกเลิก</button>
+        <button type="submit" id="saveSalesBtn" class="btn btn-primary">บันทึกรายชื่อ</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<div id="toast" class="toast"></div><script src="js/config.js"></script><script src="js/api.js"></script><script src="js/admin.js"></script></body></html>
