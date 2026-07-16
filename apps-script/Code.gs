@@ -55,7 +55,7 @@ function doGet() {
 function doPost(e) {
   try {
     const request = JSON.parse((e.postData && e.postData.contents) || '{}');
-    const handler = HANDLERS[request.action];
+    const handler = getHandlers_()[request.action];
     if (!handler) throw new Error('Unknown action: ' + request.action);
     return json_(handler(request));
   } catch (error) {
@@ -452,7 +452,8 @@ function isCampaignCurrentlyVisible_(item) {
   return true;
 }
 
-const HANDLERS = {
+function getHandlers_() {
+  return {
   getActiveCampaigns: () => ({
     success: true,
     data: rows_('Campaigns').filter(isCampaignCurrentlyVisible_)
@@ -520,4 +521,5 @@ const HANDLERS = {
   validateSession: request => ({
     success: isAdminSessionValid_(request.token)
   })
-};
+  };
+}
