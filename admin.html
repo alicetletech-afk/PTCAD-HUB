@@ -4,6 +4,96 @@
 <section id="salesView" class="admin-view"><div class="toolbar"><h2>Salespeople</h2><button id="addSales" class="btn btn-primary">+ เพิ่มรายชื่อ</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>Ref Code</th><th>ทีม</th><th>สถานะ</th><th></th></tr></thead><tbody id="salesTable"></tbody></table></div></section>
 <section id="channelView" class="admin-view"><div class="toolbar"><h2>Channels</h2><button id="addChannel" class="btn btn-primary">+ เพิ่มช่องทาง</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>utm_source</th><th>utm_medium</th><th>สถานะ</th><th></th></tr></thead><tbody id="channelTable"></tbody></table></div></section>
 <section id="historyView" class="admin-view"><div class="toolbar"><h2>Link History</h2><button id="exportCSV" class="btn btn-primary">Export CSV</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>เวลา</th><th>แคมเปญ</th><th>ผู้สร้าง</th><th>ช่องทาง</th><th>URL</th></tr></thead><tbody id="adminHistoryTable"></tbody></table></div></section></main></div>
+
+<div id="campaignModal" class="cms-modal" aria-hidden="true">
+  <div class="cms-modal-backdrop" data-close-campaign-modal></div>
+  <section class="cms-modal-dialog cms-modal-dialog-wide" role="dialog" aria-modal="true" aria-labelledby="campaignModalTitle">
+    <div class="cms-modal-header">
+      <div>
+        <span class="cms-modal-eyebrow">Campaign</span>
+        <h2 id="campaignModalTitle">เพิ่มแคมเปญ</h2>
+        <p>กำหนดข้อมูลแคมเปญ ลิงก์ปลายทาง และช่วงเวลาที่แสดงใน Sales Hub</p>
+      </div>
+      <button type="button" class="cms-modal-close" data-close-campaign-modal aria-label="ปิด">×</button>
+    </div>
+
+    <form id="campaignForm" class="cms-modal-form">
+      <input type="hidden" id="campaignId">
+
+      <div class="cms-form-grid">
+        <div class="field">
+          <label for="campaignName">ชื่อแคมเปญ <span class="required">*</span></label>
+          <input id="campaignName" type="text" placeholder="เช่น PTCAD Lite 2026" required>
+        </div>
+
+        <div class="field">
+          <label for="campaignProduct">สินค้า <span class="required">*</span></label>
+          <input id="campaignProduct" type="text" placeholder="เช่น PTCAD Lite" required>
+        </div>
+
+        <div class="field full">
+          <label for="campaignDescription">คำอธิบาย</label>
+          <textarea id="campaignDescription" placeholder="คำอธิบายสั้น ๆ ที่จะแสดงบนการ์ดแคมเปญ"></textarea>
+        </div>
+
+        <div class="field full">
+          <label for="campaignLandingPage">Landing Page <span class="required">*</span></label>
+          <input id="campaignLandingPage" type="url" placeholder="https://ptcadthailand.com/..." required>
+        </div>
+
+        <div class="field full">
+          <label for="campaignKvImage">KV Image URL</label>
+          <input id="campaignKvImage" type="url" placeholder="https://.../campaign-kv.jpg">
+          <small>เว้นว่างได้ ระบบจะแสดงภาพพื้นฐานแทน</small>
+        </div>
+
+        <div class="field">
+          <label for="campaignUtm">UTM Campaign <span class="required">*</span></label>
+          <input id="campaignUtm" type="text" placeholder="เช่น ptcad_lite_2026" required>
+          <small>ใช้ตัวอักษรอังกฤษพิมพ์เล็ก ตัวเลข ขีดกลาง หรือขีดล่าง</small>
+        </div>
+
+        <div class="field">
+          <label for="campaignOrder">ลำดับการแสดงผล</label>
+          <input id="campaignOrder" type="number" min="1" step="1" value="1">
+        </div>
+
+        <div class="field">
+          <label for="campaignStartDate">วันเริ่ม</label>
+          <input id="campaignStartDate" type="date">
+        </div>
+
+        <div class="field">
+          <label for="campaignEndDate">วันสิ้นสุด</label>
+          <input id="campaignEndDate" type="date">
+        </div>
+
+        <div class="field full">
+          <label for="campaignCaption">Caption <span class="optional">(Optional)</span></label>
+          <textarea id="campaignCaption" placeholder="ใส่ {{generated_url}} ในตำแหน่งที่ต้องการแทรกลิงก์"></textarea>
+          <small>รองรับตัวแปร <strong>{{generated_url}}</strong></small>
+        </div>
+      </div>
+
+      <label class="cms-switch-row">
+        <span>
+          <strong>เปิดใช้งานแคมเปญ</strong>
+          <small>แสดงแคมเปญนี้ในหน้า Sales Hub ตามช่วงวันที่กำหนด</small>
+        </span>
+        <input id="campaignIsActive" type="checkbox" checked>
+        <span class="cms-switch"></span>
+      </label>
+
+      <div id="campaignFormError" class="cms-form-error hidden"></div>
+
+      <div class="cms-modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-campaign-modal>ยกเลิก</button>
+        <button type="submit" id="saveCampaignBtn" class="btn btn-primary">บันทึกแคมเปญ</button>
+      </div>
+    </form>
+  </section>
+</div>
+
 <div id="salesModal" class="cms-modal" aria-hidden="true">
   <div class="cms-modal-backdrop" data-close-sales-modal></div>
   <section class="cms-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="salesModalTitle">

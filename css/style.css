@@ -43,3 +43,49 @@ body.modal-open{overflow:hidden}
   .cms-modal-actions{position:sticky;bottom:-20px;margin:0 -20px -20px;padding:14px 20px 20px;background:#fff;border-top:1px solid #e8eff8}
   .cms-modal-actions .btn{flex:1;min-width:0}
 }
+
+
+/* TinyURL result */
+.link-result-block{margin-bottom:14px}
+.link-result-label{margin-bottom:7px;color:#6f829a;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.link-result-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.short-url-block{padding:14px;border:1px solid #bfe4d5;border-radius:14px;background:#f3fcf8}
+.short-url-block.hidden{display:none}
+.short-url{border-color:#b8e4d4!important;background:#fff!important;color:#08785e!important;font-weight:800}
+.tinyurl-badge{padding:5px 8px;border-radius:999px;background:#dff7ee;color:#08785e;font-size:10px;font-weight:900;letter-spacing:.05em}
+#shortenBtn:disabled{opacity:.72;cursor:wait}
+
+
+/* Campaign CMS modal and status toggle */
+.cms-modal-dialog-wide{width:min(760px,100%)}
+.cms-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.cms-form-grid .field.full{grid-column:1/-1}
+.cms-modal-form .field textarea{
+  width:100%;min-height:100px;padding:12px 14px;border:1px solid #d8e3f1;
+  border-radius:12px;background:#fbfdff;color:#183655;font:inherit;outline:none;
+  resize:vertical;transition:border-color .18s ease,box-shadow .18s ease,background .18s ease
+}
+.cms-modal-form .field textarea:focus{
+  background:#fff;border-color:#3297ea;box-shadow:0 0 0 4px rgba(50,151,234,.12)
+}
+.optional{color:#8495aa;font-weight:600;font-size:12px}
+.table-actions{white-space:nowrap}
+.table-switch{display:inline-flex;align-items:center;gap:9px;cursor:pointer;user-select:none}
+.table-switch input{position:absolute;opacity:0;pointer-events:none}
+.table-switch-track{
+  position:relative;width:42px;height:24px;border-radius:999px;background:#cbd8e7;
+  transition:.2s ease;box-shadow:inset 0 0 0 1px rgba(38,70,105,.08)
+}
+.table-switch-track:after{
+  content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;
+  background:#fff;box-shadow:0 2px 6px rgba(20,50,85,.22);transition:.2s ease
+}
+.table-switch input:checked+.table-switch-track{background:#21a579}
+.table-switch input:checked+.table-switch-track:after{transform:translateX(18px)}
+.table-switch input:disabled+.table-switch-track{opacity:.6}
+.table-switch-text{font-size:12px;font-weight:800;color:#6f8095;min-width:48px}
+.table-switch input:checked~.table-switch-text{color:#13805f}
+@media(max-width:640px){
+  .cms-form-grid{grid-template-columns:1fr}
+  .cms-form-grid .field.full{grid-column:auto}
+}
