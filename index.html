@@ -19,5 +19,35 @@
 <button id="copyCaptionBtn" class="btn btn-secondary">Copy Caption</button><button id="copyAllBtn" class="btn btn-secondary">Copy Caption + Link</button><button id="qrBtn" class="btn btn-ghost">QR Code</button><button id="openLinkBtn" class="btn btn-ghost">เปิดทดสอบ</button></div></div></div></div></div></section>
 <section id="history" class="section"><div class="container"><div class="section-head"><div><h2>ประวัติลิงก์ล่าสุด</h2><p>บันทึกไว้ใน Browser เมื่ออยู่ใน Demo Mode</p></div></div><div class="panel history-wrap"><table class="table"><thead><tr><th>เวลา</th><th>แคมเปญ</th><th>ผู้สร้าง</th><th>ช่องทาง</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div></div></section></main>
 <footer class="footer">PTCAD Sales Hub • Internal Use</footer><div id="toast" class="toast"></div>
-<div id="qrModal" class="modal"><div class="modal-card"><div class="modal-head"><h3>QR Code</h3><button id="closeQR" class="icon-btn">×</button></div><div id="qrCanvas"></div><div class="form-actions" style="justify-content:center"><button id="downloadQR" class="btn btn-primary">ดาวน์โหลด PNG</button></div></div></div>
+<div id="qrModal" class="qr-modal" aria-hidden="true">
+  <div class="qr-modal-backdrop" id="qrBackdrop"></div>
+  <section class="qr-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
+    <button id="closeQR" class="qr-modal-close" type="button" aria-label="ปิด">×</button>
+    <div class="qr-modal-header">
+      <span class="qr-modal-eyebrow">SHARE LINK</span>
+      <h2 id="qrModalTitle">QR Code พร้อมใช้งาน</h2>
+      <p>สแกนเพื่อเปิดลิงก์ หรือดาวน์โหลดไฟล์ PNG สำหรับนำไปใช้กับสื่อประชาสัมพันธ์</p>
+    </div>
+    <div class="qr-modal-body">
+      <div class="qr-code-card">
+        <div id="qrCanvas" class="qr-canvas"></div>
+        <span class="qr-corner qr-corner-tl"></span>
+        <span class="qr-corner qr-corner-tr"></span>
+        <span class="qr-corner qr-corner-bl"></span>
+        <span class="qr-corner qr-corner-br"></span>
+      </div>
+      <div class="qr-link-panel">
+        <div>
+          <span>ลิงก์ที่ใช้ใน QR Code</span>
+          <strong id="qrLinkText"></strong>
+        </div>
+        <button id="copyQRLink" class="qr-icon-btn" type="button" aria-label="คัดลอกลิงก์">⧉</button>
+      </div>
+    </div>
+    <div class="qr-modal-actions">
+      <button id="downloadQR" class="btn btn-primary qr-download-btn" type="button">ดาวน์โหลด PNG</button>
+      <button id="openQRLink" class="btn btn-ghost" type="button">เปิดลิงก์</button>
+    </div>
+  </section>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script src="js/config.js"></script><script src="js/api.js"></script><script src="js/app.js"></script></body></html>

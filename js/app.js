@@ -100,6 +100,61 @@ async function shortenCurrentUrl(){
 
 async function copyText(text,msg){await navigator.clipboard.writeText(text);toast(msg)}
 async function renderHistory(){const r=await PTCADApi.request("getLinkHistory");const rows=r.data.slice(0,20);$("#historyBody").innerHTML=rows.length?rows.map(x=>`<tr><td>${new Date(x.timestamp).toLocaleString("th-TH")}</td><td>${x.campaign_name}</td><td>${x.salesperson}</td><td>${x.channel}</td><td><button class="btn btn-ghost hist-copy" data-url="${encodeURIComponent(x.generated_url)}">Copy</button></td></tr>`).join(""):'<tr><td colspan="5" class="empty-row">ยังไม่มีประวัติการสร้างลิงก์</td></tr>';$$('.hist-copy').forEach(b=>b.onclick=()=>copyText(decodeURIComponent(b.dataset.url),"คัดลอกลิงก์แล้ว"))}
-function showQR(){if(!activeUrl())return;const modal=$("#qrModal"),canvas=$("#qrCanvas");canvas.innerHTML="";new QRCode(canvas,{text:activeUrl(),width:260,height:260,correctLevel:QRCode.CorrectLevel.H});modal.classList.add("show")}
-function downloadQR(){const img=$("#qrCanvas img"),canvas=$("#qrCanvas canvas");const src=img?.src||canvas?.toDataURL("image/png");if(!src)return;const a=document.createElement("a");a.href=src;a.download=`ptcad-${state.selected?.utm_campaign||'link'}-qr.png`;a.click()}
-document.addEventListener("DOMContentLoaded",()=>{init();$("#generateBtn").onclick=generate;$("#shortenBtn").onclick=shortenCurrentUrl;$("#copyLinkBtn").onclick=()=>copyText(activeUrl(),"คัดลอกลิงก์แล้ว");$("#copyCaptionBtn").onclick=()=>copyText(state.currentCaption,"คัดลอกแคปชันแล้ว");$("#copyAllBtn").onclick=()=>copyText(`${state.currentCaption}${state.currentCaption.includes(activeUrl())?"":"\n\n"+activeUrl()}`,"คัดลอกแคปชันและลิงก์แล้ว");$("#openLinkBtn").onclick=()=>window.open(activeUrl(),"_blank");$("#qrBtn").onclick=showQR;$("#closeQR").onclick=()=>$("#qrModal").classList.remove("show");$("#downloadQR").onclick=downloadQR});
+function showQR(){
+  const url=activeUrl();
+  if(!url)return;
+  const modal=$("#qrModal");
+  const canvas=$("#qrCanvas");
+  canvas.innerHTML="";
+  new QRCode(canvas,{
+    text:url,
+    width:280,
+    height:280,
+    correctLevel:QRCode.CorrectLevel.H
+  });
+  $("#qrLinkText").textContent=url;
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden","false");
+  document.body.classList.add("modal-open");
+}
+
+function closeQRModal(){
+  const modal=$("#qrModal");
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden","true");
+  document.body.classList.remove("modal-open");
+}
+function downloadQR(){
+  const img=$("#qrCanvas img");
+  const canvas=$("#qrCanvas canvas");
+  const src=img?.src||canvas?.toDataURL("image/png");
+  if(!src)return;
+  const link=document.createElement("a");
+  link.href=src;
+  link.download=`ptcad-${state.selected?.utm_campaign||"link"}-qr.png`;
+  link.click();
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  init();
+  $("#generateBtn").onclick=generate;
+  $("#shortenBtn").onclick=shortenCurrentUrl;
+  $("#copyLinkBtn").onclick=()=>copyText(activeUrl(),"คัดลอกลิงก์แล้ว");
+  $("#copyCaptionBtn").onclick=()=>copyText(state.currentCaption,"คัดลอกแคปชันแล้ว");
+  $("#copyAllBtn").onclick=()=>copyText(
+    `${state.currentCaption}${state.currentCaption.includes(activeUrl())?"":"\n\n"+activeUrl()}`,
+    "คัดลอกแคปชันและลิงก์แล้ว"
+  );
+  $("#openLinkBtn").onclick=()=>window.open(activeUrl(),"_blank");
+  $("#qrBtn").onclick=showQR;
+  $("#closeQR").onclick=closeQRModal;
+  $("#qrBackdrop").onclick=closeQRModal;
+  $("#downloadQR").onclick=downloadQR;
+  $("#copyQRLink").onclick=()=>copyText(activeUrl(),"คัดลอกลิงก์แล้ว");
+  $("#openQRLink").onclick=()=>window.open(activeUrl(),"_blank");
+
+  document.addEventListener("keydown",event=>{
+    if(event.key==="Escape"&&$("#qrModal").classList.contains("show")){
+      closeQRModal();
+    }
+  });
+});
