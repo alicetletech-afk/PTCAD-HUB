@@ -43,3 +43,14 @@ body.modal-open{overflow:hidden}
   .cms-modal-actions{position:sticky;bottom:-20px;margin:0 -20px -20px;padding:14px 20px 20px;background:#fff;border-top:1px solid #e8eff8}
   .cms-modal-actions .btn{flex:1;min-width:0}
 }
+
+
+/* TinyURL result */
+.link-result-block{margin-bottom:14px}
+.link-result-label{margin-bottom:7px;color:#6f829a;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.link-result-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.short-url-block{padding:14px;border:1px solid #bfe4d5;border-radius:14px;background:#f3fcf8}
+.short-url-block.hidden{display:none}
+.short-url{border-color:#b8e4d4!important;background:#fff!important;color:#08785e!important;font-weight:800}
+.tinyurl-badge{padding:5px 8px;border-radius:999px;background:#dff7ee;color:#08785e;font-size:10px;font-weight:900;letter-spacing:.05em}
+#shortenBtn:disabled{opacity:.72;cursor:wait}

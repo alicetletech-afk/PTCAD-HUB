@@ -49,3 +49,21 @@ setAdminPassword("รหัสใหม่ที่ต้องการ")
 ```
 
 หลังแก้ `Code.gs` ให้สร้าง deployment version ใหม่ทุกครั้ง
+
+
+## TinyURL
+
+ระบบย่อลิงก์ทำงานผ่าน Google Apps Script เพื่อไม่เปิดเผย API Token ในหน้าเว็บ
+
+1. สมัคร/เข้าสู่ระบบ TinyURL
+2. ไปที่ Profile > API
+3. สร้าง API Token ที่มีสิทธิ์ Create TinyURL
+4. ใน Apps Script แก้บรรทัดตัวอย่างแล้วรันหนึ่งครั้ง:
+
+```javascript
+setTinyUrlApiToken("วาง_TOKEN_ตรงนี้")
+```
+
+5. Deploy โค้ด Apps Script เป็น New version
+
+จากนั้นหน้า Sales Hub จะมีปุ่ม `ย่อลิงก์ TinyURL`

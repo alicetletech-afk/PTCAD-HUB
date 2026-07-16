@@ -1,4 +1,4 @@
-let state={campaigns:[],salespeople:[],channels:[],selected:null,currentUrl:"",currentCaption:""};
+let state={campaigns:[],salespeople:[],channels:[],selected:null,currentUrl:"",shortUrl:"",currentCaption:"",originalCaption:""};
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
 function statusOf(c){const n=new Date(),s=new Date(c.start_date),e=new Date(c.end_date+"T23:59:59");if(n<s)return["Upcoming","badge-upcoming"];if(n>e)return["Expired","badge-expired"];return["Active","badge-active"]}
@@ -30,6 +30,7 @@ async function generate(){
   const variant=$("#contentVariant").value.trim().toLowerCase().replace(/\s+/g,"-");
   const refCode=sales.ref_code||sales.utm_code||"";
   if(!refCode)return toast("รายชื่อเซลล์นี้ยังไม่มี Ref Code");
+  state.shortUrl="";
   state.currentUrl=buildUrl(base,{
     ref:refCode,
     utm_source:channel.utm_source,
@@ -37,10 +38,15 @@ async function generate(){
     utm_campaign:state.selected.utm_campaign,
     utm_content:variant
   });
-  state.currentCaption=replaceCaption($("#caption").value,state.currentUrl,sales);
+  state.originalCaption=$("#caption").value;
+  state.currentCaption=replaceCaption(state.originalCaption,state.currentUrl,sales);
   $("#resultEmpty").classList.add("hidden");
   $("#resultBox").classList.add("show");
   $("#resultUrl").textContent=state.currentUrl;
+  $("#shortUrlBlock").classList.add("hidden");
+  $("#shortUrl").textContent="";
+  $("#shortenBtn").disabled=false;
+  $("#shortenBtn").textContent="ย่อลิงก์ TinyURL";
   $("#metaCampaign").textContent=state.selected.campaign_name;
   $("#metaSales").textContent=sales.display_name;
   $("#metaChannel").textContent=channel.display_name;
@@ -63,8 +69,37 @@ async function generate(){
   renderHistory();
   toast("สร้างลิงก์เรียบร้อยแล้ว");
 }
+
+function activeUrl(){
+  return state.shortUrl||state.currentUrl;
+}
+
+async function shortenCurrentUrl(){
+  if(!state.currentUrl)return toast("กรุณาสร้างลิงก์ก่อน");
+  const button=$("#shortenBtn");
+  button.disabled=true;
+  button.textContent="กำลังย่อลิงก์...";
+
+  try{
+    const result=await PTCADApi.request("shortenUrl",{url:state.currentUrl});
+    state.shortUrl=result.short_url;
+    $("#shortUrl").textContent=state.shortUrl;
+    $("#shortUrlBlock").classList.remove("hidden");
+
+    const sales=state.salespeople.find(x=>x.sales_id===$("#salesperson").value);
+    state.currentCaption=replaceCaption(state.originalCaption,state.shortUrl,sales);
+
+    button.textContent="ย่อแล้ว ✓";
+    toast("สร้าง TinyURL เรียบร้อยแล้ว");
+  }catch(error){
+    button.disabled=false;
+    button.textContent="ย่อลิงก์ TinyURL";
+    toast(error.message||"ย่อลิงก์ไม่สำเร็จ");
+  }
+}
+
 async function copyText(text,msg){await navigator.clipboard.writeText(text);toast(msg)}
 async function renderHistory(){const r=await PTCADApi.request("getLinkHistory");const rows=r.data.slice(0,20);$("#historyBody").innerHTML=rows.length?rows.map(x=>`<tr><td>${new Date(x.timestamp).toLocaleString("th-TH")}</td><td>${x.campaign_name}</td><td>${x.salesperson}</td><td>${x.channel}</td><td><button class="btn btn-ghost hist-copy" data-url="${encodeURIComponent(x.generated_url)}">Copy</button></td></tr>`).join(""):'<tr><td colspan="5" class="empty-row">ยังไม่มีประวัติการสร้างลิงก์</td></tr>';$$('.hist-copy').forEach(b=>b.onclick=()=>copyText(decodeURIComponent(b.dataset.url),"คัดลอกลิงก์แล้ว"))}
-function showQR(){if(!state.currentUrl)return;const modal=$("#qrModal"),canvas=$("#qrCanvas");canvas.innerHTML="";new QRCode(canvas,{text:state.currentUrl,width:260,height:260,correctLevel:QRCode.CorrectLevel.H});modal.classList.add("show")}
+function showQR(){if(!activeUrl())return;const modal=$("#qrModal"),canvas=$("#qrCanvas");canvas.innerHTML="";new QRCode(canvas,{text:activeUrl(),width:260,height:260,correctLevel:QRCode.CorrectLevel.H});modal.classList.add("show")}
 function downloadQR(){const img=$("#qrCanvas img"),canvas=$("#qrCanvas canvas");const src=img?.src||canvas?.toDataURL("image/png");if(!src)return;const a=document.createElement("a");a.href=src;a.download=`ptcad-${state.selected?.utm_campaign||'link'}-qr.png`;a.click()}
-document.addEventListener("DOMContentLoaded",()=>{init();$("#generateBtn").onclick=generate;$("#copyLinkBtn").onclick=()=>copyText(state.currentUrl,"คัดลอกลิงก์แล้ว");$("#copyCaptionBtn").onclick=()=>copyText(state.currentCaption,"คัดลอกแคปชันแล้ว");$("#copyAllBtn").onclick=()=>copyText(`${state.currentCaption}${state.currentCaption.includes(state.currentUrl)?"":"\n\n"+state.currentUrl}`,"คัดลอกแคปชันและลิงก์แล้ว");$("#openLinkBtn").onclick=()=>window.open(state.currentUrl,"_blank");$("#qrBtn").onclick=showQR;$("#closeQR").onclick=()=>$("#qrModal").classList.remove("show");$("#downloadQR").onclick=downloadQR});
+document.addEventListener("DOMContentLoaded",()=>{init();$("#generateBtn").onclick=generate;$("#shortenBtn").onclick=shortenCurrentUrl;$("#copyLinkBtn").onclick=()=>copyText(activeUrl(),"คัดลอกลิงก์แล้ว");$("#copyCaptionBtn").onclick=()=>copyText(state.currentCaption,"คัดลอกแคปชันแล้ว");$("#copyAllBtn").onclick=()=>copyText(`${state.currentCaption}${state.currentCaption.includes(activeUrl())?"":"\n\n"+activeUrl()}`,"คัดลอกแคปชันและลิงก์แล้ว");$("#openLinkBtn").onclick=()=>window.open(activeUrl(),"_blank");$("#qrBtn").onclick=showQR;$("#closeQR").onclick=()=>$("#qrModal").classList.remove("show");$("#downloadQR").onclick=downloadQR});
