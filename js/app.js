@@ -108,8 +108,8 @@ function showQR(){
   canvas.innerHTML="";
   new QRCode(canvas,{
     text:url,
-    width:280,
-    height:280,
+    width:240,
+    height:240,
     correctLevel:QRCode.CorrectLevel.H
   });
   $("#qrLinkText").textContent=url;
