@@ -180,7 +180,8 @@ function shortenWithTinyUrl_(longUrl) {
   }
 
   const token = PropertiesService.getScriptProperties()
-    .getProperty('TINYURL_API_TOKEN');
+    .getProperty('TINYURL_API_TOKEN') ||
+    'nzbZINio0bFpx8xUQgIHaIDYBRaW3evNXG7zgJ5K6bbHVOz4txyYzBXJBk9E';
 
   if (!token) {
     throw new Error('ยังไม่ได้ตั้งค่า TinyURL API Token ใน Apps Script');
