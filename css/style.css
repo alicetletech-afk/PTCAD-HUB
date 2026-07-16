@@ -43,15 +43,3 @@ body.modal-open{overflow:hidden}
   .cms-modal-actions{position:sticky;bottom:-20px;margin:0 -20px -20px;padding:14px 20px 20px;background:#fff;border-top:1px solid #e8eff8}
   .cms-modal-actions .btn{flex:1;min-width:0}
 }
-
-
-/* Short URL */
-.short-url-box{margin-top:14px;padding:14px 16px;border:1px solid #d8e8f8;border-radius:14px;background:linear-gradient(135deg,#f6fbff,#edf7ff)}
-.short-url-label{margin-bottom:7px;color:#6c8098;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
-.short-url-row{display:flex;align-items:center;gap:12px}
-.short-url-value{min-width:0;flex:1;color:#1268b8;font-size:16px;font-weight:800;word-break:break-all}
-.short-url-row .btn{flex:0 0 auto}
-@media(max-width:640px){
-  .short-url-row{align-items:stretch;flex-direction:column}
-  .short-url-row .btn{width:100%}
-}

@@ -1,34 +1,8 @@
-let state={campaigns:[],salespeople:[],channels:[],selected:null,currentUrl:"",currentShortUrl:"",currentCaption:""};
+let state={campaigns:[],salespeople:[],channels:[],selected:null,currentUrl:"",currentCaption:""};
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
 function statusOf(c){const n=new Date(),s=new Date(c.start_date),e=new Date(c.end_date+"T23:59:59");if(n<s)return["Upcoming","badge-upcoming"];if(n>e)return["Expired","badge-expired"];return["Active","badge-active"]}
 function fmtDate(d){return new Date(d).toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"})}
-
-async function shortenCurrentUrl(){
-  if(!state.currentUrl)return toast("กรุณาสร้างลิงก์ก่อน");
-  const button=document.querySelector("#shortenBtn");
-  button.disabled=true;
-  button.textContent="กำลังย่อ...";
-  try{
-    const response=await PTCADApi.request("shortenUrl",{url:state.currentUrl});
-    state.currentShortUrl=response.short_url;
-    document.querySelector("#shortUrl").textContent=state.currentShortUrl;
-    document.querySelector("#shortUrlBox").classList.remove("hidden");
-    toast("ย่อลิงก์เรียบร้อยแล้ว");
-  }catch(error){
-    toast(error.message||"ย่อลิงก์ไม่สำเร็จ");
-  }finally{
-    button.disabled=false;
-    button.textContent="ย่อลิงก์ฟรี";
-  }
-}
-
-async function copyShortUrl(){
-  if(!state.currentShortUrl)return toast("ยังไม่มีลิงก์แบบย่อ");
-  await copy(state.currentShortUrl);
-  toast("คัดลอกลิงก์ย่อแล้ว");
-}
-
 async function init(){document.querySelectorAll(".ptcad-logo").forEach(i=>i.src=PTCAD_CONFIG.logoUrl);const [c,s,ch]=await Promise.all([PTCADApi.request("getActiveCampaigns"),PTCADApi.request("getSalespeople"),PTCADApi.request("getChannels")]);state.campaigns=c.data.sort((a,b)=>(a.display_order||99)-(b.display_order||99));state.salespeople=s.data;state.channels=ch.data;renderCampaigns();fillSelects();renderHistory();$("#campaignCount").textContent=state.campaigns.length}
 function renderCampaigns(){const box=$("#campaignGrid");box.innerHTML=state.campaigns.map(c=>{const st=statusOf(c);return`<article class="campaign-card" data-id="${c.campaign_id}"><div class="campaign-image">${c.kv_image?`<img src="${c.kv_image}" alt="">`:`PTCAD<br>${c.product}`}</div><div class="campaign-body"><div class="campaign-top"><div><h3>${c.campaign_name}</h3><p>${c.description||""}</p></div><span class="badge ${st[1]}">${st[0]}</span></div><div class="campaign-footer"><span class="date">${fmtDate(c.start_date)} – ${fmtDate(c.end_date)}</span><button class="btn btn-secondary select-campaign" data-id="${c.campaign_id}">เลือก</button></div></div></article>`}).join("");$$('.select-campaign').forEach(b=>b.onclick=()=>selectCampaign(b.dataset.id))}
 function fillSelects(){$("#salesperson").innerHTML='<option value="">เลือกชื่อเซลล์</option>'+state.salespeople.map(x=>`<option value="${x.sales_id}">${x.display_name}</option>`).join("");$("#channel").innerHTML='<option value="">เลือกช่องทาง</option>'+state.channels.map(x=>`<option value="${x.channel_id}">${x.display_name}</option>`).join("")}
@@ -63,9 +37,6 @@ async function generate(){
     utm_campaign:state.selected.utm_campaign,
     utm_content:variant
   });
-  state.currentShortUrl="";
-  const shortBox=document.querySelector("#shortUrlBox");
-  if(shortBox)shortBox.classList.add("hidden");
   state.currentCaption=replaceCaption($("#caption").value,state.currentUrl,sales);
   $("#resultEmpty").classList.add("hidden");
   $("#resultBox").classList.add("show");
@@ -96,8 +67,4 @@ async function copyText(text,msg){await navigator.clipboard.writeText(text);toas
 async function renderHistory(){const r=await PTCADApi.request("getLinkHistory");const rows=r.data.slice(0,20);$("#historyBody").innerHTML=rows.length?rows.map(x=>`<tr><td>${new Date(x.timestamp).toLocaleString("th-TH")}</td><td>${x.campaign_name}</td><td>${x.salesperson}</td><td>${x.channel}</td><td><button class="btn btn-ghost hist-copy" data-url="${encodeURIComponent(x.generated_url)}">Copy</button></td></tr>`).join(""):'<tr><td colspan="5" class="empty-row">ยังไม่มีประวัติการสร้างลิงก์</td></tr>';$$('.hist-copy').forEach(b=>b.onclick=()=>copyText(decodeURIComponent(b.dataset.url),"คัดลอกลิงก์แล้ว"))}
 function showQR(){if(!state.currentUrl)return;const modal=$("#qrModal"),canvas=$("#qrCanvas");canvas.innerHTML="";new QRCode(canvas,{text:state.currentUrl,width:260,height:260,correctLevel:QRCode.CorrectLevel.H});modal.classList.add("show")}
 function downloadQR(){const img=$("#qrCanvas img"),canvas=$("#qrCanvas canvas");const src=img?.src||canvas?.toDataURL("image/png");if(!src)return;const a=document.createElement("a");a.href=src;a.download=`ptcad-${state.selected?.utm_campaign||'link'}-qr.png`;a.click()}
-document.addEventListener("DOMContentLoaded",()=>{
-document.querySelector("#shortenBtn")?.addEventListener("click",shortenCurrentUrl);
-document.querySelector("#copyShortBtn")?.addEventListener("click",copyShortUrl);
-
-init();$("#generateBtn").onclick=generate;$("#copyLinkBtn").onclick=()=>copyText(state.currentUrl,"คัดลอกลิงก์แล้ว");$("#copyCaptionBtn").onclick=()=>copyText(state.currentCaption,"คัดลอกแคปชันแล้ว");$("#copyAllBtn").onclick=()=>copyText(`${state.currentCaption}${state.currentCaption.includes(state.currentUrl)?"":"\n\n"+state.currentUrl}`,"คัดลอกแคปชันและลิงก์แล้ว");$("#openLinkBtn").onclick=()=>window.open(state.currentUrl,"_blank");$("#qrBtn").onclick=showQR;$("#closeQR").onclick=()=>$("#qrModal").classList.remove("show");$("#downloadQR").onclick=downloadQR});
+document.addEventListener("DOMContentLoaded",()=>{init();$("#generateBtn").onclick=generate;$("#copyLinkBtn").onclick=()=>copyText(state.currentUrl,"คัดลอกลิงก์แล้ว");$("#copyCaptionBtn").onclick=()=>copyText(state.currentCaption,"คัดลอกแคปชันแล้ว");$("#copyAllBtn").onclick=()=>copyText(`${state.currentCaption}${state.currentCaption.includes(state.currentUrl)?"":"\n\n"+state.currentUrl}`,"คัดลอกแคปชันและลิงก์แล้ว");$("#openLinkBtn").onclick=()=>window.open(state.currentUrl,"_blank");$("#qrBtn").onclick=showQR;$("#closeQR").onclick=()=>$("#qrModal").classList.remove("show");$("#downloadQR").onclick=downloadQR});
