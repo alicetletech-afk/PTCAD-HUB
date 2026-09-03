@@ -1,8 +1,8 @@
-<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PTCAD Hub CMS</title><link rel="stylesheet" href="css/style.css"></head><body><div class="admin-shell"><aside class="sidebar"><div class="brand"><img class="ptcad-logo" alt="PTCAD"><div><div class="brand-title">Hub CMS</div><div class="brand-sub">Admin Panel</div></div></div><nav class="menu"><button class="active" data-view="dashboardView">Dashboard</button><button data-view="campaignView">Campaigns</button><button data-view="salesView">Salespeople</button><button data-view="channelView">Channels</button><button data-view="historyView">Link History</button><button id="logout">Logout</button></nav></aside><main class="admin-main"><div class="admin-head"><div><h1>PTCAD Hub CMS</h1><p style="color:var(--muted);margin:6px 0 0">จัดการแคมเปญ รายชื่อเซลล์ และช่องทาง</p></div><a href="index.html" class="btn btn-ghost">เปิด Sales Hub</a></div>
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PTCAD Hub CMS</title><link rel="stylesheet" href="css/style.css"></head><body><div class="admin-shell"><aside class="sidebar"><div class="brand"><img class="ptcad-logo" alt="PTCAD"><div><div class="brand-title">Hub CMS</div><div class="brand-sub">Admin Panel</div></div></div><nav class="menu"><button class="active" data-view="dashboardView">Dashboard</button><button data-view="campaignView">Campaigns</button><button data-view="salesView">Sales / Reseller</button><button data-view="channelView">Channels</button><button data-view="historyView">Link History</button><button id="logout">Logout</button></nav></aside><main class="admin-main"><div class="admin-head"><div><h1>PTCAD Hub CMS</h1><p style="color:var(--muted);margin:6px 0 0">จัดการ Campaign ID, เซลล์ / Reseller และ Channel Code สำหรับ CF UTM</p></div><a href="index.html" class="btn btn-ghost">เปิด Sales Hub</a></div>
 
-<section id="campaignView" class="admin-view"><div class="toolbar"><h2>Campaigns</h2><button id="addCampaign" class="btn btn-primary">+ เพิ่มแคมเปญ</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>สินค้า</th><th>UTM Campaign</th><th>ช่วงเวลา</th><th>สถานะ</th><th></th></tr></thead><tbody id="campaignTable"></tbody></table></div></section>
-<section id="salesView" class="admin-view"><div class="toolbar"><h2>Salespeople</h2><button id="addSales" class="btn btn-primary">+ เพิ่มรายชื่อ</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>Ref Code</th><th>ทีม</th><th>สถานะ</th><th></th></tr></thead><tbody id="salesTable"></tbody></table></div></section>
-<section id="channelView" class="admin-view"><div class="toolbar"><h2>Channels</h2><button id="addChannel" class="btn btn-primary">+ เพิ่มช่องทาง</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>utm_source</th><th>utm_medium</th><th>สถานะ</th><th></th></tr></thead><tbody id="channelTable"></tbody></table></div></section>
+<section id="campaignView" class="admin-view"><div class="toolbar"><h2>Campaigns</h2><button id="addCampaign" class="btn btn-primary">+ เพิ่มแคมเปญ</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>สินค้า</th><th>Campaign ID</th><th>ช่วงเวลา</th><th>สถานะ</th><th></th></tr></thead><tbody id="campaignTable"></tbody></table></div></section>
+<section id="salesView" class="admin-view"><div class="toolbar"><h2>Sales / Reseller</h2><button id="addSales" class="btn btn-primary">+ เพิ่มรายชื่อ</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>Source Code</th><th>ประเภท / ทีม</th><th>สถานะ</th><th></th></tr></thead><tbody id="salesTable"></tbody></table></div></section>
+<section id="channelView" class="admin-view"><div class="toolbar"><h2>Channels</h2><button id="addChannel" class="btn btn-primary">+ เพิ่มช่องทาง</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>ชื่อ</th><th>Channel Code (cf_utm_medium)</th><th>สถานะ</th><th></th></tr></thead><tbody id="channelTable"></tbody></table></div></section>
 <section id="historyView" class="admin-view"><div class="toolbar"><h2>Link History</h2><button id="exportCSV" class="btn btn-primary">Export CSV</button></div><div class="panel history-wrap"><table class="table"><thead><tr><th>เวลา</th><th>แคมเปญ</th><th>ผู้สร้าง</th><th>ช่องทาง</th><th>URL</th></tr></thead><tbody id="adminHistoryTable"></tbody></table></div></section></main></div>
 
 <div id="campaignModal" class="cms-modal" aria-hidden="true">
@@ -48,9 +48,9 @@
         </div>
 
         <div class="field">
-          <label for="campaignUtm">UTM Campaign <span class="required">*</span></label>
-          <input id="campaignUtm" type="text" placeholder="เช่น ptcad_lite_2026" required>
-          <small>ใช้ตัวอักษรอังกฤษพิมพ์เล็ก ตัวเลข ขีดกลาง หรือขีดล่าง</small>
+          <label for="campaignUtm">Campaign ID / cf_utm_campaign <span class="required">*</span></label>
+          <input id="campaignUtm" type="text" placeholder="เช่น CMP001" required>
+          <small>ใช้เป็น Campaign ID ในลิงก์โดยตรง เช่น CMP001</small>
         </div>
 
         <div class="field">
@@ -100,8 +100,8 @@
     <div class="cms-modal-header">
       <div>
         <span class="cms-modal-eyebrow">Salesperson</span>
-        <h2 id="salesModalTitle">เพิ่มรายชื่อเซลล์</h2>
-        <p>กำหนดชื่อที่แสดงและ Ref Code สำหรับสร้างลิงก์ติดตามผล</p>
+        <h2 id="salesModalTitle">เพิ่ม Sales / Reseller</h2>
+        <p>เพิ่มได้ทั้งชื่อเซลล์หรือชื่อบริษัท Reseller โดย Source Code จะถูกใช้เป็น cf_utm_source</p>
       </div>
       <button type="button" class="cms-modal-close" data-close-sales-modal aria-label="ปิด">×</button>
     </div>
@@ -115,9 +115,9 @@
       </div>
 
       <div class="field">
-        <label for="salesRefCode">Ref Code <span class="required">*</span></label>
+        <label for="salesRefCode">Source Code / cf_utm_source <span class="required">*</span></label>
         <input id="salesRefCode" type="text" placeholder="เช่น ball" autocomplete="off" required>
-        <small>ใช้ในลิงก์ เช่น <strong>?ref=ball</strong> ควรใช้ตัวอักษรอังกฤษพิมพ์เล็ก ไม่มีเว้นวรรค</small>
+        <small>ตัวอย่าง <strong>ball</strong> หรือ <strong>abc-reseller</strong> • ระบบยังใช้ค่าเดียวกันกับ ref เพื่อรองรับลิงก์เดิม</small>
       </div>
 
       <div class="field">

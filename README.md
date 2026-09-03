@@ -1,69 +1,47 @@
-# PTCAD Sales Hub — Final
+# PTCAD Sales Hub — CF UTM Edition
 
-ระบบพร้อมใช้งานจริงสำหรับทีมขายและผู้ดูแล CMS
+ระบบสร้างลิงก์สำหรับทีม Sales / Reseller โดยใช้ Custom Fields สำหรับส่ง Attribution เข้า CRM
+
+## CF UTM Standard
+
+| Field | ความหมาย | ตัวอย่าง |
+|---|---|---|
+| `cf_utm_source` | ชื่อเซลล์ หรือชื่อบริษัท Reseller (Source Code) | `ball`, `abc-reseller` |
+| `cf_utm_medium` | ช่องทาง | `line`, `facebook`, `email`, `qr` |
+| `cf_utm_campaign` | Campaign ID | `CMP001` |
+| `cf_utm_term` | CRM Software | `zoho-crm` |
+| `cf_utm_content` | Creative / Content | `kv`, `banner`, `brochure` |
+
+ค่า `cf_utm_term` ตั้งจาก `crmSoftware` ใน `js/config.js` และค่าเริ่มต้นคือ `zoho-crm`
+
+## ตัวอย่างลิงก์
+
+```text
+https://ptcadthailand.com/pricing/?ref=ball&cf_utm_source=ball&cf_utm_medium=line&cf_utm_campaign=CMP001&cf_utm_term=zoho-crm&cf_utm_content=kv
+```
+
+`ref` ยังถูกเก็บไว้เพื่อรองรับระบบเดิม แต่ Attribution หลักใช้ `cf_utm_*` ทั้ง 5 fields
 
 ## หน้าใช้งาน
 
-- `index.html` — Sales Hub สำหรับสร้างลิงก์
+- `index.html` — Sales Hub สำหรับสร้างลิงก์ CF UTM
 - `login.html` — เข้าสู่ CMS
-- `admin.html` — จัดการ Campaign, Salespeople, Channels และ Link History
+- `admin.html` — จัดการ Campaign ID, Sales / Reseller, Channels และ Link History
 
-## รูปแบบลิงก์
+## Mapping ข้อมูลเดิม
 
-ระบบสร้าง `ref` เป็นพารามิเตอร์แรกเสมอ เช่น:
+- Salespeople `ref_code` → `cf_utm_source`
+- Channels `channel_code` หรือ fallback จาก `utm_source` → `cf_utm_medium`
+- Campaigns `campaign_id` → `cf_utm_campaign`
+- `PTCAD_CONFIG.crmSoftware` → `cf_utm_term`
+- Creative ที่กรอกหน้า Generator → `cf_utm_content`
 
-```text
-https://ptcadthailand.com/pricing/?ref=ball&utm_source=line&utm_medium=sales&utm_campaign=ptcad_lite_2026
-```
+Frontend ยังส่ง legacy history fields (`utm_source`, `utm_medium`, ฯลฯ) คู่ไปกับข้อมูลใหม่เพื่อช่วยรองรับ Apps Script / Google Sheet เวอร์ชันเดิม แต่ URL ที่สร้างจะใช้ `cf_utm_*` เท่านั้น
 
 ## API
 
-ไฟล์ `js/config.js` เชื่อมกับ Google Apps Script Web App แล้ว:
-
-```text
-https://script.google.com/macros/s/AKfycbwEh8xJd-XIDwHOCRRunC1CPYxYvBbrUrvxrUH5nLJlOVCCsEn2RXA3_vVIeSRUmCKn/exec
-```
-
-และตั้งค่า `demoMode: false` เรียบร้อย
-
-## Google Apps Script
-
-โค้ดอยู่ที่:
-
-```text
-apps-script/Code.gs
-```
-
-ฟังก์ชันสำคัญ:
-
-- `setupPTCADSalesHub()` สร้าง Google Sheet และข้อมูลตั้งต้น
-- `setAdminPassword("รหัสใหม่")` เปลี่ยนรหัส CMS
-- `getDatabaseInfo()` ดูลิงก์ Google Sheet
-
-## หมายเหตุด้านความปลอดภัย
-
-ควรเปลี่ยนรหัส CMS จากค่าเริ่มต้นทันทีด้วย:
-
-```javascript
-setAdminPassword("รหัสใหม่ที่ต้องการ")
-```
-
-หลังแก้ `Code.gs` ให้สร้าง deployment version ใหม่ทุกครั้ง
-
+ไฟล์ `js/config.js` เชื่อมกับ Google Apps Script Web App ที่ตั้งไว้เดิม และ `demoMode: false`
 
 ## TinyURL
 
-ระบบย่อลิงก์ทำงานผ่าน Google Apps Script เพื่อไม่เปิดเผย API Token ในหน้าเว็บ
-
-1. สมัคร/เข้าสู่ระบบ TinyURL
-2. ไปที่ Profile > API
-3. สร้าง API Token ที่มีสิทธิ์ Create TinyURL
-4. ใน Apps Script แก้บรรทัดตัวอย่างแล้วรันหนึ่งครั้ง:
-
-```javascript
-setTinyUrlApiToken("วาง_TOKEN_ตรงนี้")
-```
-
-5. Deploy โค้ด Apps Script เป็น New version
-
-จากนั้นหน้า Sales Hub จะมีปุ่ม `ย่อลิงก์ TinyURL`
+ระบบย่อลิงก์ทำงานผ่าน Google Apps Script เช่นเดิมเพื่อไม่เปิดเผย API Token ในหน้าเว็บ

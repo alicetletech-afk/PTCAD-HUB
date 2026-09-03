@@ -1,24 +1,209 @@
-<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PTCAD Sales Hub</title><link rel="stylesheet" href="css/style.css"></head><body>
-<header class="topbar"><div class="container nav"><div class="brand"><img class="ptcad-logo" alt="PTCAD"><div><div class="brand-title">PTCAD Sales Hub</div><div class="brand-sub">UTM Link Generator for Sales Team</div></div></div><div class="nav-actions"><a class="btn btn-ghost" href="#history">ประวัติลิงก์</a><a class="btn btn-secondary" href="login.html">เข้าสู่ CMS</a></div></div></header>
-<main><section class="hero"><div class="container"><div class="hero-card"><div><h1>สร้างลิงก์ขาย พร้อม UTM อัตโนมัติ</h1><p>เลือกแคมเปญ ชื่อผู้ส่ง และช่องทาง ระบบจะสร้างลิงก์มาตรฐานให้พร้อม Copy, Caption และ QR Code ทันที</p></div><div class="hero-stat"><strong id="campaignCount">0</strong><span>Active Campaigns</span></div></div></div></section>
-<section class="section"><div class="container"><div class="section-head"><div><h2>แคมเปญที่ใช้งานอยู่</h2><p>เลือกโปรที่ต้องการส่งให้ลูกค้า</p></div></div><div id="campaignGrid" class="campaign-grid"></div></div></section>
-<section id="generator" class="section"><div class="container"><div class="section-head"><div><h2>สร้างลิงก์</h2><p>แคมเปญที่เลือก: <strong id="selectedCampaign">ยังไม่ได้เลือก</strong></p></div></div><div class="workspace"><div class="panel"><h3>ข้อมูลลิงก์</h3><div class="form-grid"><div class="field full"><label>Landing Page</label><input id="landingPage" placeholder="https://ptcadthailand.com/"></div><div class="field"><label>ชื่อเซลล์</label><select id="salesperson"></select></div><div class="field"><label>ช่องทาง</label><select id="channel"></select></div><div class="field full"><label>Content Variant <span class="helper">(Optional)</span></label><input id="contentVariant" placeholder="เช่น kv-a, follow-up, new-lead"></div><div class="field full"><label>Caption <span class="helper">(Optional)</span></label><textarea id="caption" placeholder="แคปชันสำหรับส่งลูกค้า"></textarea></div></div><div class="form-actions"><button id="generateBtn" class="btn btn-primary">สร้างลิงก์ UTM</button><button class="btn btn-ghost" onclick="location.reload()">ล้างข้อมูล</button></div></div>
-<div class="panel"><h3>ผลลัพธ์</h3><div id="resultEmpty" class="result-empty">เลือกแคมเปญและกรอกข้อมูลเพื่อสร้างลิงก์</div><div id="resultBox" class="result-box"><div class="link-result-block">
-  <div class="link-result-label">ลิงก์ต้นฉบับ</div>
-  <div id="resultUrl" class="result-url"></div>
-</div>
-<div id="shortUrlBlock" class="link-result-block short-url-block hidden">
-  <div class="link-result-head">
-    <div class="link-result-label">TinyURL พร้อมใช้งาน</div>
-    <span class="tinyurl-badge">SHORT LINK</span>
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PTCAD Link Hub</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="sales-hub-v2">
+<header class="topbar hub-topbar">
+  <div class="container nav hub-nav">
+    <div class="brand hub-brand">
+      <img class="ptcad-logo" alt="PTCAD">
+      <div class="hub-brand-copy">
+        <div class="brand-title">PTCAD Link Hub</div>
+        <div class="brand-sub">Sales & Reseller link workspace</div>
+      </div>
+    </div>
+    <div class="nav-actions hub-nav-actions">
+      <a class="hub-text-link" href="#history">ประวัติลิงก์</a>
+      <a class="btn btn-soft" href="login.html">CMS</a>
+    </div>
   </div>
-  <div id="shortUrl" class="result-url short-url"></div>
-</div>
-<div class="result-meta"><div class="meta-card"><span>Campaign</span><strong id="metaCampaign"></strong></div><div class="meta-card"><span>Salesperson</span><strong id="metaSales"></strong></div><div class="meta-card"><span>Channel</span><strong id="metaChannel"></strong></div><div class="meta-card"><span>Created</span><strong id="metaTime"></strong></div></div><div class="form-actions"><button id="shortenBtn" class="btn btn-primary">ย่อลิงก์ TinyURL</button>
-<button id="copyLinkBtn" class="btn btn-secondary">Copy Link</button>
-<button id="copyCaptionBtn" class="btn btn-secondary">Copy Caption</button><button id="copyAllBtn" class="btn btn-secondary">Copy Caption + Link</button><button id="qrBtn" class="btn btn-ghost">QR Code</button><button id="openLinkBtn" class="btn btn-ghost">เปิดทดสอบ</button></div></div></div></div></div></section>
-<section id="history" class="section"><div class="container"><div class="section-head"><div><h2>ประวัติลิงก์ล่าสุด</h2><p>บันทึกไว้ใน Browser เมื่ออยู่ใน Demo Mode</p></div></div><div class="panel history-wrap"><table class="table"><thead><tr><th>เวลา</th><th>แคมเปญ</th><th>ผู้สร้าง</th><th>ช่องทาง</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div></div></section></main>
-<footer class="footer">PTCAD Sales Hub • Internal Use</footer><div id="toast" class="toast"></div>
+</header>
+
+<main>
+  <section class="hub-intro">
+    <div class="container hub-intro-grid">
+      <div>
+        <div class="hub-kicker"><span class="hub-dot"></span> PTCAD SALES TOOL</div>
+        <h1>สร้างลิงก์ให้ทีมขาย<br><span>ง่าย อ่านรู้เรื่อง และ Track ได้ครบ</span></h1>
+        <p>เลือกแคมเปญ คนส่ง และช่องทาง แล้วระบบจะประกอบ CF UTM พร้อมลิงก์สั้นและ QR Code ให้ทันที</p>
+      </div>
+      <div class="hub-mini-status" aria-label="จำนวนแคมเปญที่ใช้งาน">
+        <span>Active campaigns</span>
+        <strong id="campaignCount">0</strong>
+        <small>เลือกด้านล่างเพื่อเริ่มสร้างลิงก์</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="section campaign-section">
+    <div class="container">
+      <div class="section-head hub-section-head">
+        <div>
+          <span class="section-eyebrow">01 · CAMPAIGN</span>
+          <h2>เลือกแคมเปญ</h2>
+          <p>เลือกโปรหรือกิจกรรมที่ต้องการส่งให้ลูกค้า</p>
+        </div>
+      </div>
+      <div id="campaignGrid" class="campaign-grid"></div>
+    </div>
+  </section>
+
+  <section id="generator" class="section generator-section">
+    <div class="container">
+      <div class="section-head hub-section-head generator-heading">
+        <div>
+          <span class="section-eyebrow">02 · BUILD LINK</span>
+          <h2>ตั้งค่าลิงก์</h2>
+          <p>กำลังสร้างสำหรับ <strong id="selectedCampaign" class="selected-campaign-name">ยังไม่ได้เลือกแคมเปญ</strong></p>
+        </div>
+      </div>
+
+      <div class="workspace hub-workspace">
+        <section class="panel builder-panel">
+          <div class="panel-title-row">
+            <div>
+              <span class="panel-kicker">LINK SETUP</span>
+              <h3>ข้อมูลสำหรับ Tracking</h3>
+            </div>
+            <span class="crm-pill">CRM · <b id="crmSoftwareValue">zoho-crm</b></span>
+          </div>
+
+          <div class="field landing-field">
+            <div class="friendly-label">
+              <span class="field-number">1</span>
+              <div><label>Landing Page</label><small>หน้าที่ลูกค้าจะไปหลังจากคลิกลิงก์</small></div>
+            </div>
+            <input id="landingPage" placeholder="https://ptcadthailand.com/">
+          </div>
+
+          <div class="utm-fields">
+            <div class="field utm-field-card">
+              <div class="utm-field-head">
+                <div><label>คนส่งลิงก์</label><small>เซลล์ หรือ Reseller</small></div>
+                <code>cf_utm_source</code>
+              </div>
+              <select id="salesperson"></select>
+            </div>
+
+            <div class="field utm-field-card">
+              <div class="utm-field-head">
+                <div><label>ช่องทาง</label><small>ส่งผ่านช่องทางไหน</small></div>
+                <code>cf_utm_medium</code>
+              </div>
+              <select id="channel"></select>
+            </div>
+
+            <div class="field utm-field-card full">
+              <div class="utm-field-head">
+                <div><label>Creative / Content <span class="optional-inline">ไม่บังคับ</span></label><small>เช่น KV, Banner, Brochure หรือ Roll-up</small></div>
+                <code>cf_utm_content</code>
+              </div>
+              <input id="contentVariant" placeholder="เช่น kv-launch, banner-line, brochure-a4">
+            </div>
+          </div>
+
+          <div class="field caption-field">
+            <div class="friendly-label">
+              <span class="field-number">2</span>
+              <div><label>Caption <span class="optional-inline">ไม่บังคับ</span></label><small>ใส่ข้อความที่อยาก Copy ไปพร้อมลิงก์ได้เลย</small></div>
+            </div>
+            <textarea id="caption" placeholder="ข้อความสำหรับส่งให้ลูกค้า..."></textarea>
+          </div>
+
+          <div class="form-actions builder-actions">
+            <button id="generateBtn" class="btn btn-primary btn-build"><span>สร้างลิงก์</span><b>→</b></button>
+            <button class="btn btn-quiet" onclick="location.reload()">ล้างข้อมูล</button>
+          </div>
+        </section>
+
+        <aside class="panel result-panel">
+          <div class="panel-title-row result-title-row">
+            <div>
+              <span class="panel-kicker">PREVIEW</span>
+              <h3>ลิงก์พร้อมใช้</h3>
+            </div>
+            <span class="ready-dot"><i></i> Ready</span>
+          </div>
+
+          <div id="resultEmpty" class="result-empty friendly-empty">
+            <div class="empty-icon">↗</div>
+            <strong>ยังไม่มีลิงก์</strong>
+            <span>เลือกแคมเปญและตั้งค่า Tracking<br>แล้วกด “สร้างลิงก์”</span>
+          </div>
+
+          <div id="resultBox" class="result-box">
+            <div class="utm-preview">
+              <div class="utm-preview-head"><span>Tracking ที่จะถูกบันทึก</span><small>CF UTM</small></div>
+              <div class="utm-chip-grid">
+                <div class="utm-chip"><span>source</span><strong id="previewSource">—</strong></div>
+                <div class="utm-chip"><span>medium</span><strong id="previewMedium">—</strong></div>
+                <div class="utm-chip"><span>campaign</span><strong id="previewCampaign">—</strong></div>
+                <div class="utm-chip"><span>term</span><strong id="previewTerm">zoho-crm</strong></div>
+                <div class="utm-chip utm-chip-wide"><span>content</span><strong id="previewContent">—</strong></div>
+              </div>
+            </div>
+
+            <div class="link-result-block primary-link-block">
+              <div class="link-result-label">Original link</div>
+              <div id="resultUrl" class="result-url"></div>
+            </div>
+
+            <div id="shortUrlBlock" class="link-result-block short-url-block hidden">
+              <div class="link-result-head">
+                <div class="link-result-label">TinyURL</div>
+                <span class="tinyurl-badge">SHORT</span>
+              </div>
+              <div id="shortUrl" class="result-url short-url"></div>
+            </div>
+
+            <div class="result-meta compact-meta">
+              <div class="meta-card"><span>Campaign</span><strong id="metaCampaign"></strong></div>
+              <div class="meta-card"><span>Sent by</span><strong id="metaSales"></strong></div>
+              <div class="meta-card"><span>Channel</span><strong id="metaChannel"></strong></div>
+              <div class="meta-card"><span>Created</span><strong id="metaTime"></strong></div>
+            </div>
+
+            <div class="result-actions-main">
+              <button id="shortenBtn" class="btn btn-primary">ย่อลิงก์ TinyURL</button>
+              <button id="copyLinkBtn" class="btn btn-secondary">Copy Link</button>
+              <button id="qrBtn" class="btn btn-soft">QR Code</button>
+            </div>
+            <div class="result-actions-more">
+              <button id="copyCaptionBtn" class="text-action">Copy Caption</button>
+              <span>·</span>
+              <button id="copyAllBtn" class="text-action">Caption + Link</button>
+              <span>·</span>
+              <button id="openLinkBtn" class="text-action">เปิดทดสอบ ↗</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="history" class="section history-section">
+    <div class="container">
+      <div class="section-head hub-section-head">
+        <div>
+          <span class="section-eyebrow">03 · RECENT</span>
+          <h2>ลิงก์ล่าสุด</h2>
+          <p>หยิบลิงก์ที่เพิ่งสร้างกลับมาใช้ได้เร็ว ๆ</p>
+        </div>
+      </div>
+      <div class="panel history-wrap history-panel">
+        <table class="table"><thead><tr><th>เวลา</th><th>แคมเปญ</th><th>ผู้สร้าง</th><th>ช่องทาง</th><th></th></tr></thead><tbody id="historyBody"></tbody></table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">PTCAD Link Hub · Internal Use</footer>
+<div id="toast" class="toast"></div>
+
 <div id="qrModal" class="qr-modal" aria-hidden="true">
   <div class="qr-modal-backdrop" id="qrBackdrop"></div>
   <section class="qr-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="qrModalTitle">
@@ -26,28 +211,19 @@
     <div class="qr-modal-header">
       <span class="qr-modal-eyebrow">SHARE LINK</span>
       <h2 id="qrModalTitle">QR Code พร้อมใช้งาน</h2>
-      <p>สแกนเพื่อเปิดลิงก์ หรือดาวน์โหลดไฟล์ PNG สำหรับนำไปใช้กับสื่อประชาสัมพันธ์</p>
+      <p>สแกนเพื่อเปิดลิงก์ หรือดาวน์โหลด PNG ไปใช้กับสื่อได้เลย</p>
     </div>
     <div class="qr-modal-body">
-      <div class="qr-code-card">
-        <div id="qrCanvas" class="qr-canvas"></div>
-        <span class="qr-corner qr-corner-tl"></span>
-        <span class="qr-corner qr-corner-tr"></span>
-        <span class="qr-corner qr-corner-bl"></span>
-        <span class="qr-corner qr-corner-br"></span>
-      </div>
-      <div class="qr-link-panel">
-        <div>
-          <span>ลิงก์ที่ใช้ใน QR Code</span>
-          <strong id="qrLinkText"></strong>
-        </div>
-        <button id="copyQRLink" class="qr-icon-btn" type="button" aria-label="คัดลอกลิงก์">⧉</button>
-      </div>
+      <div class="qr-code-card"><div id="qrCanvas" class="qr-canvas"></div><span class="qr-corner qr-corner-tl"></span><span class="qr-corner qr-corner-tr"></span><span class="qr-corner qr-corner-bl"></span><span class="qr-corner qr-corner-br"></span></div>
+      <div class="qr-link-panel"><div><span>ลิงก์ใน QR Code</span><strong id="qrLinkText"></strong></div><button id="copyQRLink" class="qr-icon-btn" type="button" aria-label="คัดลอกลิงก์">⧉</button></div>
     </div>
-    <div class="qr-modal-actions">
-      <button id="downloadQR" class="btn btn-primary qr-download-btn" type="button">ดาวน์โหลด PNG</button>
-      <button id="openQRLink" class="btn btn-ghost" type="button">เปิดลิงก์</button>
-    </div>
+    <div class="qr-modal-actions"><button id="downloadQR" class="btn btn-primary qr-download-btn" type="button">ดาวน์โหลด PNG</button><button id="openQRLink" class="btn btn-ghost" type="button">เปิดลิงก์</button></div>
   </section>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script src="js/config.js"></script><script src="js/api.js"></script><script src="js/app.js"></script></body></html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

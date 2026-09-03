@@ -71,7 +71,7 @@ function renderCampaigns(){
     return `<tr>
       <td>${escapeHtml(item.campaign_name)}</td>
       <td>${escapeHtml(item.product||"-")}</td>
-      <td>${escapeHtml(item.utm_campaign||"-")}</td>
+      <td>${escapeHtml(item.campaign_id||"-")}</td>
       <td>${escapeHtml(period)}</td>
       <td>
         <label class="table-switch" title="${active?"ปิดแคมเปญ":"เปิดแคมเปญ"}">
@@ -102,7 +102,8 @@ function openCampaignModal(id=""){
   $("#campaignDescription").value=old.description||"";
   $("#campaignLandingPage").value=old.landing_page||"https://ptcadthailand.com/";
   $("#campaignKvImage").value=old.kv_image||"";
-  $("#campaignUtm").value=old.utm_campaign||"";
+  $("#campaignUtm").value=old.campaign_id||"";
+  $("#campaignUtm").readOnly=Boolean(id);
   $("#campaignOrder").value=old.display_order||Math.max(A.campaigns.length+1,1);
   $("#campaignStartDate").value=old.start_date||today;
   $("#campaignEndDate").value=old.end_date||"";
@@ -137,15 +138,15 @@ async function saveCampaignFromModal(event){
   const campaignName=$("#campaignName").value.trim();
   const product=$("#campaignProduct").value.trim();
   const landingPage=$("#campaignLandingPage").value.trim();
-  const utmCampaign=$("#campaignUtm").value.trim().toLowerCase()
-    .replace(/\s+/g,"_")
-    .replace(/[^a-z0-9_-]/g,"");
+  const campaignCode=$("#campaignUtm").value.trim().toUpperCase()
+    .replace(/\s+/g,"-")
+    .replace(/[^A-Z0-9_-]/g,"");
 
   errorBox.textContent="";
   errorBox.classList.add("hidden");
 
-  if(!campaignName||!product||!landingPage||!utmCampaign){
-    errorBox.textContent="กรุณากรอกชื่อแคมเปญ สินค้า Landing Page และ UTM Campaign ให้ครบ";
+  if(!campaignName||!product||!landingPage||!campaignCode){
+    errorBox.textContent="กรุณากรอกชื่อแคมเปญ สินค้า Landing Page และ Campaign ID ให้ครบ";
     errorBox.classList.remove("hidden");
     return;
   }
@@ -167,12 +168,12 @@ async function saveCampaignFromModal(event){
   }
 
   const duplicate=A.campaigns.find(item=>
-    String(item.utm_campaign||"").toLowerCase()===utmCampaign&&
+    String(item.campaign_id||"").toUpperCase()===campaignCode&&
     item.campaign_id!==existingId
   );
 
   if(duplicate){
-    errorBox.textContent=`UTM Campaign “${utmCampaign}” ถูกใช้โดย ${duplicate.campaign_name} แล้ว`;
+    errorBox.textContent=`Campaign ID “${campaignCode}” ถูกใช้โดย ${duplicate.campaign_name} แล้ว`;
     errorBox.classList.remove("hidden");
     return;
   }
@@ -180,13 +181,13 @@ async function saveCampaignFromModal(event){
   const old=A.campaigns.find(item=>item.campaign_id===existingId)||{};
   const item={
     ...old,
-    campaign_id:existingId||("CMP"+Date.now()),
+    campaign_id:campaignCode,
     campaign_name:campaignName,
     product,
     description:$("#campaignDescription").value.trim(),
     landing_page:landingPage,
     kv_image:$("#campaignKvImage").value.trim(),
-    utm_campaign:utmCampaign,
+    utm_campaign:campaignCode,
     display_order:Number($("#campaignOrder").value)||1,
     start_date:startDate,
     end_date:endDate,
@@ -268,7 +269,7 @@ function renderSales(){
 function openSalesModal(id=""){
   const old=A.sales.find(item=>item.sales_id===id)||{};
 
-  $("#salesModalTitle").textContent=id?"แก้ไขรายชื่อเซลล์":"เพิ่มรายชื่อเซลล์";
+  $("#salesModalTitle").textContent=id?"แก้ไข Sales / Reseller":"เพิ่ม Sales / Reseller";
   $("#salesId").value=old.sales_id||"";
   $("#salesDisplayName").value=old.display_name||"";
   $("#salesRefCode").value=old.ref_code||old.utm_code||"";
@@ -313,7 +314,7 @@ async function saveSalesFromModal(event){
   }
 
   if(!refCode){
-    errorBox.textContent="กรุณากรอก Ref Code เป็นภาษาอังกฤษ";
+    errorBox.textContent="กรุณากรอก Source Code เป็นภาษาอังกฤษ";
     errorBox.classList.remove("hidden");
     return;
   }
@@ -324,7 +325,7 @@ async function saveSalesFromModal(event){
   );
 
   if(duplicate){
-    errorBox.textContent=`Ref Code “${refCode}” ถูกใช้โดย ${duplicate.display_name} แล้ว`;
+    errorBox.textContent=`Source Code “${refCode}” ถูกใช้โดย ${duplicate.display_name} แล้ว`;
     errorBox.classList.remove("hidden");
     return;
   }
@@ -363,12 +364,11 @@ function renderChannels(){
   $("#channelTable").innerHTML=A.channels.map(item=>`
     <tr>
       <td>${escapeHtml(item.display_name)}</td>
-      <td>${escapeHtml(item.utm_source)}</td>
-      <td>${escapeHtml(item.utm_medium)}</td>
+      <td>${escapeHtml(item.channel_code||item.cf_utm_medium||item.utm_source||"")}</td>
       <td>${item.is_active?"Active":"Inactive"}</td>
       <td><button class="btn btn-ghost" onclick="editChannel('${escapeHtml(item.channel_id)}')">แก้ไข</button></td>
     </tr>
-  `).join("")||'<tr><td colspan="5" class="empty-row">ไม่มีข้อมูล</td></tr>';
+  `).join("")||'<tr><td colspan="4" class="empty-row">ไม่มีข้อมูล</td></tr>';
 }
 
 function input(label,value=""){
@@ -384,8 +384,13 @@ async function editChannel(id){
   const item={...old,display_name:input("ชื่อช่องทาง",old.display_name||"")};
   if(item.display_name===null)return;
 
-  item.utm_source=input("utm_source",old.utm_source||"");
-  item.utm_medium=input("utm_medium",old.utm_medium||"sales");
+  const channelCode=input("Channel Code / cf_utm_medium",old.channel_code||old.cf_utm_medium||old.utm_source||"");
+  if(channelCode===null)return;
+  item.channel_code=String(channelCode).trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9_-]/g,"");
+  item.cf_utm_medium=item.channel_code;
+  // Keep the old field populated so an older Google Sheet / Apps Script remains compatible.
+  item.utm_source=item.channel_code;
+  item.utm_medium=item.channel_code;
   item.is_active=confirm("เปิดใช้งานช่องทางนี้หรือไม่?");
 
   await PTCADApi.request("saveChannel",{item});
@@ -406,12 +411,18 @@ function renderHistory(){
 
 function exportCSV(){
   const rows=[
-    ["Timestamp","Campaign","Salesperson","Channel","URL"],
+    ["Timestamp","Campaign","Campaign ID","Source","Channel","cf_utm_source","cf_utm_medium","cf_utm_campaign","cf_utm_term","cf_utm_content","URL"],
     ...A.history.map(item=>[
       item.timestamp,
       item.campaign_name,
+      item.campaign_id||item.cf_utm_campaign||item.utm_campaign,
       item.salesperson,
       item.channel,
+      item.cf_utm_source||item.utm_source,
+      item.cf_utm_medium||item.utm_medium,
+      item.cf_utm_campaign||item.utm_campaign,
+      item.cf_utm_term||item.utm_term,
+      item.cf_utm_content||item.utm_content,
       item.generated_url
     ])
   ];

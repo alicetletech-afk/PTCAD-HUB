@@ -66,6 +66,6 @@ demoMode: false
 
 1. เปิด Web App URL โดยตรง ต้องเห็นข้อความ `PTCAD Sales Hub API is running`
 2. เปิด Sales Hub และสร้างลิงก์ทดสอบ
-3. ลิงก์ควรขึ้นต้น Query ด้วย `?ref=ชื่อเซลล์`
+3. ลิงก์ควรมี `ref` และ CF UTM เช่น `?ref=ball&cf_utm_source=ball&cf_utm_medium=line&cf_utm_campaign=CMP001&cf_utm_term=zoho-crm&cf_utm_content=kv`
 4. ตรวจสอบแท็บ `LinkHistory` ว่ามีข้อมูลถูกบันทึก
 5. Login CMS ด้วยรหัสเริ่มต้น `ptcad2026` แล้วเปลี่ยนรหัสผ่านด้วยฟังก์ชัน `setAdminPassword`
