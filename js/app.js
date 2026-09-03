@@ -1,7 +1,7 @@
 let state={campaigns:[],salespeople:[],channels:[],selected:null,currentUrl:"",shortUrl:"",currentCaption:"",originalCaption:""};
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 const CF_KEYS=["cf_utm_source","cf_utm_medium","cf_utm_campaign","cf_utm_term","cf_utm_content"];
-const LEGACY_UTM_KEYS=["utm_source","utm_medium","utm_campaign","utm_term","utm_content"];
+const UTM_KEYS=["utm_source","utm_medium","utm_campaign","utm_term","utm_content"];
 
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
 function statusOf(c){const n=new Date(),s=new Date(c.start_date),e=new Date(c.end_date+"T23:59:59");if(n<s)return["Upcoming","badge-upcoming"];if(n>e)return["Expired","badge-expired"];return["Active","badge-active"]}
@@ -57,12 +57,12 @@ function selectCampaign(id){
 }
 function buildUrl(base,params){
   const u=new URL(base);
-  const removeKeys=new Set(["ref",...CF_KEYS,...LEGACY_UTM_KEYS]);
+  const removeKeys=new Set(["ref",...CF_KEYS,...UTM_KEYS]);
   const existing=[...u.searchParams.entries()].filter(([key])=>!removeKeys.has(key));
   u.search="";
   if(params.ref)u.searchParams.append("ref",params.ref);
   existing.forEach(([key,value])=>u.searchParams.append(key,value));
-  CF_KEYS.forEach(key=>{if(params[key])u.searchParams.append(key,params[key])});
+  UTM_KEYS.forEach(key=>{if(params[key])u.searchParams.append(key,params[key])});
   return u.toString();
 }
 function replaceCaption(t,url,sales){return(t||"").replaceAll("{{generated_url}}",url).replaceAll("{{campaign_name}}",state.selected?.campaign_name||"").replaceAll("{{product}}",state.selected?.product||"").replaceAll("{{salesperson}}",sales?.display_name||"").replaceAll("{{start_date}}",state.selected?.start_date||"").replaceAll("{{end_date}}",state.selected?.end_date||"")}
@@ -89,11 +89,11 @@ async function generate(){
   state.shortUrl="";
   state.currentUrl=buildUrl(base,{
     ref:refCode,
-    cf_utm_source:source,
-    cf_utm_medium:medium,
-    cf_utm_campaign:campaignId,
-    cf_utm_term:term,
-    cf_utm_content:content
+    utm_source:source,
+    utm_medium:medium,
+    utm_campaign:campaignId,
+    utm_term:term,
+    utm_content:content
   });
   state.originalCaption=$("#caption").value;
   state.currentCaption=replaceCaption(state.originalCaption,state.currentUrl,sales);
@@ -108,7 +108,7 @@ async function generate(){
   $("#metaSales").textContent=sales.display_name;
   $("#metaChannel").textContent=channel.display_name;
   $("#metaTime").textContent=new Date().toLocaleString("th-TH");
-  // Friendly CF UTM preview in the redesigned result panel
+  // Friendly UTM preview in the redesigned result panel
   if($("#previewSource")) $("#previewSource").textContent=source||"—";
   if($("#previewMedium")) $("#previewMedium").textContent=medium||"—";
   if($("#previewCampaign")) $("#previewCampaign").textContent=campaignId||"—";
@@ -138,7 +138,7 @@ async function generate(){
     ref_code:refCode
   }});
   renderHistory();
-  toast("สร้างลิงก์ CF UTM เรียบร้อยแล้ว");
+  toast("สร้างลิงก์ UTM เรียบร้อยแล้ว");
 }
 
 function activeUrl(){return state.shortUrl||state.currentUrl}
