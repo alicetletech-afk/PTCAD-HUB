@@ -542,3 +542,11 @@ body.modal-open{overflow:hidden}
   .sales-hub-v2 .result-actions-main #shortenBtn{grid-column:1/-1}
   .sales-hub-v2 .utm-chip-grid{grid-template-columns:1fr 1fr}
 }
+
+/* Campaign selection reliability + friendly state */
+.campaign-card{cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease,background .16s ease}
+.campaign-card:hover{transform:translateY(-2px)}
+.campaign-card.selected{border-color:#8bb8ff;box-shadow:0 10px 28px rgba(54,104,190,.12);background:linear-gradient(180deg,#fff 0%,#f7fbff 100%)}
+.campaign-card.selected .select-campaign,.select-campaign.is-selected{background:#e9f3ff!important;border-color:#b9d7ff!important;color:#175fae!important;box-shadow:none!important}
+.selected-campaign-name{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:#eef6ff;color:#245e9c;font-weight:700}
+.generator-section.has-campaign .selected-campaign-name:before{content:'✓';display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:#d9ecff;font-size:10px}

@@ -18,15 +18,43 @@ async function init(){
   state.salespeople=s.data||[];
   state.channels=ch.data||[];
   renderCampaigns();fillSelects();renderHistory();
+  const remembered=sessionStorage.getItem("ptcad_selected_campaign");
+  if(remembered&&state.campaigns.some(x=>campaignKey(x.campaign_id)===campaignKey(remembered)))selectCampaign(remembered);
   $("#campaignCount").textContent=state.campaigns.length;
   $("#crmSoftwareValue").textContent=crmSoftware();
 }
-function renderCampaigns(){const box=$("#campaignGrid");box.innerHTML=state.campaigns.map(c=>{const st=statusOf(c);return`<article class="campaign-card" data-id="${c.campaign_id}"><div class="campaign-image">${c.kv_image?`<img src="${c.kv_image}" alt="">`:`PTCAD<br>${c.product}`}</div><div class="campaign-body"><div class="campaign-top"><div><h3>${c.campaign_name}</h3><p>${c.description||""}</p></div><span class="badge ${st[1]}">${st[0]}</span></div><div class="campaign-footer"><span class="date">${fmtDate(c.start_date)} – ${fmtDate(c.end_date)}</span><button class="btn btn-secondary select-campaign" data-id="${c.campaign_id}">เลือก</button></div></div></article>`}).join("");$$('.select-campaign').forEach(b=>b.onclick=()=>selectCampaign(b.dataset.id))}
+function campaignKey(value){return String(value??"").trim()}
+function renderCampaigns(){
+  const box=$("#campaignGrid");
+  box.innerHTML=state.campaigns.map(c=>{
+    const st=statusOf(c), id=campaignKey(c.campaign_id);
+    return`<article class="campaign-card" data-id="${id}" role="button" tabindex="0" aria-label="เลือกแคมเปญ ${c.campaign_name}"><div class="campaign-image">${c.kv_image?`<img src="${c.kv_image}" alt="">`:`PTCAD<br>${c.product}`}</div><div class="campaign-body"><div class="campaign-top"><div><h3>${c.campaign_name}</h3><p>${c.description||""}</p></div><span class="badge ${st[1]}">${st[0]}</span></div><div class="campaign-footer"><span class="date">${fmtDate(c.start_date)} – ${fmtDate(c.end_date)}</span><button type="button" class="btn btn-secondary select-campaign" data-id="${id}">เลือก</button></div></div></article>`
+  }).join("");
+  box.onclick=e=>{const card=e.target.closest('.campaign-card');if(card)selectCampaign(card.dataset.id)};
+  box.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.closest('.campaign-card')){e.preventDefault();selectCampaign(e.target.closest('.campaign-card').dataset.id)}};
+}
 function fillSelects(){
   $("#salesperson").innerHTML='<option value="">เลือกเซลล์ / Reseller</option>'+state.salespeople.map(x=>`<option value="${x.sales_id}">${x.display_name}</option>`).join("");
   $("#channel").innerHTML='<option value="">เลือกช่องทาง</option>'+state.channels.map(x=>`<option value="${x.channel_id}">${x.display_name}</option>`).join("")
 }
-function selectCampaign(id){state.selected=state.campaigns.find(x=>x.campaign_id===id);$$('.campaign-card').forEach(c=>c.classList.toggle('selected',c.dataset.id===id));$("#landingPage").value=state.selected.landing_page;$("#caption").value=state.selected.caption||"";$("#selectedCampaign").textContent=state.selected.campaign_name;window.scrollTo({top:$("#generator").offsetTop-80,behavior:"smooth"})}
+function selectCampaign(id){
+  const key=campaignKey(id);
+  const selected=state.campaigns.find(x=>campaignKey(x.campaign_id)===key);
+  if(!selected){toast("ไม่พบข้อมูลแคมเปญ กรุณารีเฟรชหน้า");return}
+  state.selected=selected;
+  sessionStorage.setItem("ptcad_selected_campaign",key);
+  $$('.campaign-card').forEach(c=>{
+    const active=campaignKey(c.dataset.id)===key;
+    c.classList.toggle('selected',active);
+    const btn=c.querySelector('.select-campaign');
+    if(btn){btn.textContent=active?'เลือกแล้ว ✓':'เลือก';btn.classList.toggle('is-selected',active)}
+  });
+  $("#landingPage").value=selected.landing_page||"";
+  $("#caption").value=selected.caption||"";
+  $("#selectedCampaign").textContent=selected.campaign_name||key;
+  $("#generator").classList.add("has-campaign");
+  window.scrollTo({top:$("#generator").offsetTop-80,behavior:"smooth"});
+}
 function buildUrl(base,params){
   const u=new URL(base);
   const removeKeys=new Set(["ref",...CF_KEYS,...LEGACY_UTM_KEYS]);
